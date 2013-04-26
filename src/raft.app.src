@@ -1,0 +1,8 @@
+%% -*- erlang-mode -*-
+{application, raft, [ {description,  "Raft Consensus Algorithm Implementation"}
+                    , {vsn,          git}  
+                    , {applications, [kernel, stdlib]}
+                    , {env,          []}
+                    , {mod,          {raft_app, []}}
+                    , {registered,   []}
+                    ]}.
