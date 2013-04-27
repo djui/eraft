@@ -1,3 +1,4 @@
+/.dialyzer_plt
 /.eunit/
 /deps/
 /ebin/

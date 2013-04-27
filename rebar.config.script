@@ -1,0 +1,36 @@
+%% -*- erlang -*-
+DepsDir  = proplists:get_value(deps_dir, CONFIG, "deps"),
+LockFile = DepsDir ++ ".lock",
+%% We must have at least one dependency and the lock file must exist
+case {file:consult(LockFile), proplists:get_value(deps, CONFIG, [])} of
+  {{error, _}, _   } -> CONFIG;
+  {_         , []  } -> CONFIG;
+  {{ok, Revs}, Deps} ->
+    DepsFun =
+      %% NOTE: The new "raw" dep feature is not supported, yet.
+      %% NOTE: Only git repositories are supported.
+      fun({Name, Vsn, Repo}=Orig) when element(1, Repo) == git ->
+          %% We can't match on 2- and 3-element tuples
+          Url = element(2, Repo),
+          %% Either the git revision is already in the lock file...
+          case proplists:get_value(Name, Revs) of
+            undefined ->
+              Path = filename:join(DepsDir, Name),
+              Rev  = os:cmd(io_lib:format("cd ~s && git log -1 --format=%h", [Path])),
+              %% ...or we try to extract it from the dependency directory
+              case re:run(Rev, "^[A-Fa-f0-9]{7,}", [{capture, first, list}]) of
+                {match, [R]} -> {Name, Vsn, {git, Url, R}};
+                nomatch      -> Orig
+              end;
+            Rev -> {Name, Vsn, {git, Url, Rev}}
+          end;
+         %% The dependency either has no git repository or no repostory at all
+         (Dep) -> Dep
+      end,
+    NewDeps = lists:map(DepsFun, Deps),
+    %% Store the found dependency revisions in the lock file
+    NewRevs = [io_lib:format("~p.~n", [{N, R}]) || {N, _, {git, _, R}} <- NewDeps],
+    ok      = file:write_file(LockFile, NewRevs),
+    %% Update rebar config's dependencies with the locked git revisions
+    lists:keyreplace(deps, 1, CONFIG, {deps, NewDeps})
+end.
