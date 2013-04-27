@@ -1,5 +1,6 @@
-{stdlib2,"fb63151"}.
-{tulib,"265c7f4"}.
-{ehf,"c3375a0"}.
-{lager,"e58a33d"}.
-{protobuffs,"8a42ff0"}.
+%%% THIS FILE IS AUTO-GENERATED. DO NOT EDIT IT MANUALLY %%%
+{stdlib2,"fb63151cab6212feb67c89c808c0e6f880750250"}.
+{tulib,"265c7f4453b9aacf2abd5f5f98c559a232aa0f09"}.
+{ehf,"c3375a0b8fccd9ee3556780c210a0f6a6c9b598a"}.
+{lager,"e58a33d095962ff5774e9c9011afd3d3200003e1"}.
+{protobuffs,"8a42ff0f90893ae91bbf4ff80ad2cf00dd889da0"}.
