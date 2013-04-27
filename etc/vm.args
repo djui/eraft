@@ -1,0 +1,5 @@
+%% -*- erlang -*-
+-name raft@127.0.0.1
+-setcookie raft
+-pz ebin deps/*/ebin
+-boot start_sasl
