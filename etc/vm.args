@@ -1,5 +1,10 @@
 %% -*- erlang -*-
 -name raft@127.0.0.1
 -setcookie raft
--pz ebin deps/*/ebin
+-pz ebin
+-pz deps/stdlib2/ebin
+-pz deps/tulib/ebin
+-pz deps/ehf/ebin
 -boot start_sasl
+-config etc/app.config
+-s raft
