@@ -1,10 +1,14 @@
 %% -*- erlang -*-
 -name raft1@127.0.0.1
 -setcookie raft
--config app.config
+-connect_all false
+
 -pz ../../ebin
 -pz ../../deps/stdlib2/ebin
 -pz ../../deps/tulib/ebin
 -pz ../../deps/ehf/ebin
+
+-config app.config
+
 -boot start_sasl
 -s raft

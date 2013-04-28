@@ -1,11 +1,12 @@
-%% @doc JSON messaging implementation.
+%% @doc JSON messaging backend.
 -module(raft_msg_json).
 
 %% API
--export([ ]).
+-export([ init/1 ]).
 
 %%% API ========================================================================
-
+init(_Config) ->
+  undefined.
 
 %%% TESTS ======================================================================
 -ifdef(TEST).

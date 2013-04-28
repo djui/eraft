@@ -8,8 +8,9 @@
         ]).
 
 %%% API ========================================================================
-start(_StartType, _StartArgs) ->
-  raft_sup:start_link().
+start(normal, _StartArgs) ->
+  Conf = application:get_all_env(raft),
+  raft_sup:start_link(Conf).
 
 stop(_State) ->
   ok.

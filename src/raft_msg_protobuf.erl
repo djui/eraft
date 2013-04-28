@@ -1,11 +1,12 @@
-%% @doc Protobuf messaging implementation.
+%% @doc Protobuf messaging backend.
 -module(raft_msg_protobuf).
 
 %% API
--export([ ]).
+-export([ init/1 ]).
 
 %%% API ========================================================================
-
+init(_Config) ->
+  undefined.
 
 %%% TESTS ======================================================================
 -ifdef(TEST).

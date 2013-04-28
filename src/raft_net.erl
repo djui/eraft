@@ -2,11 +2,18 @@
 -module(raft_net).
 
 %%% Callbacks ==================================================================
--callback foo(_) -> ok | error.
+-callback(init(term()) -> term()).
+-callback(send(term(), term(), term()) -> term()).
 
 %%% Exports ====================================================================
--export([ start_link/1 ]).
+-export([ init/1
+        , send/3
+        ]).
 
-%%% API ========================================================================
-start_link(_Args) ->
-  ignore.
+%%% Code =======================================================================
+init(Config) ->
+  HandlerMod = proplists:get_value(net_handler, Config),
+  {HandlerMod, HandlerMod:init(Config)}.
+
+send(To, Msg, HandlerMod) ->
+  HandlerMod:send(To, Msg).

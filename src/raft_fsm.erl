@@ -9,6 +9,7 @@
 
 %% Callbacks
 -export([ init/1
+        , initial/2
         , follower/2
         , candidate/2
         , leader/2
@@ -27,64 +28,75 @@
 -type(current_term() :: pos_integer()).
 
 %%% Records ====================================================================
--record(state, { start_args   = [] :: [_]
-               , current_term = 1  :: current_term()
-               , voted_for         :: replica()
-               }).
+-record(tate, { msg_state        :: {module(), term()}
+              , net_state        :: {module(), term()}
+              , log_state        :: {module(), term()}
+              , current_term = 1 :: current_term()
+              , voted_for        :: replica()
+              }).
 
 %%% API ========================================================================
-start_link(Args) ->
-  gen_fsm:start_link({local, ?FSM}, ?MODULE, Args, []).
+start_link(Config) ->
+  gen_fsm:start_link({local, ?FSM}, ?MODULE, Config, []).
 
 %%% States =====================================================================
-%%% Follower -------------------------------------------------------------------
-follower(timeout, State) ->
-  deferred_init(State#state.start_args),
-  {next_state, follower, State};
+initial(timeout, Config) ->
+  {next_state, follower, defer_init(Config)}.
 
-follower({election_timeout, _Election}, State) ->
-  {next_state, candidate, State}.
+%%% Follower -------------------------------------------------------------------
+follower({election_timeout, _Election}, S=#tate{msg_state=NetState}) ->
+  raft_net:send('TODO', 'TODO', NetState),
+  {next_state, candidate, S}.
 
 %%% Candidate ------------------------------------------------------------------
-candidate({election_timeout, _Election}, State) ->
-  {next_state, candidate, State};
+candidate({election_timeout, _Election}, S) ->
+  {next_state, candidate, S};
 
-candidate({higher_term, _Term}, State) ->
-  {next_state, follower, State};
+candidate({higher_term, _Term}, S) ->
+  {next_state, follower, S};
 
-candidate({append_entries, _Entries}, State) ->
-  {next_state, follower, State};
+candidate({append_entries, _Entries}, S) ->
+  {next_state, follower, S};
 
-candidate({majority, _Votes}, State) ->
-  {next_state, leader, State}.
+candidate({majority, _Votes}, S) ->
+  {next_state, leader, S}.
 
-%%% Leader  --------------------------------------------------------------------
-leader({higher_term, _Term}, State) ->
-  {next_state, follower, State}.
+%%% Leader ---------------------------------------------------------------------
+leader({higher_term, _Term}, S) ->
+  {next_state, follower, S}.
 
 %%% Internals ==================================================================
-deferred_init(Args) ->
-  Args.
+defer_init(Config) ->
+  init_handlers(Config).
+
+init_handlers(Config) ->
+  #tate{ msg_state = raft_msg:init(Config)
+       , net_state = raft_net:init(Config)
+       , log_state = raft_log:init(Config)
+       }.
 
 %%% Callbacks ==================================================================
-init(Args) ->
-  {ok, follower, #state{start_args=Args}, 0}.
+init(Config) ->
+  {ok, initial, Config, 0}.
 
-handle_event(_Event, StateName, State) ->
-  {next_state, StateName, State}.
+handle_event(_Event, StateName, S) ->
+  io:format("handle_event: ~p|~p~n", [_Event, StateName]),
+  {next_state, StateName, S}.
 
-handle_sync_event(_Event, _From, StateName, State) ->
+handle_sync_event(_Event, _From, StateName, S) ->
+  io:format("handle_sync_event: ~p|~p~n", [_Event, StateName]),
   Reply = ok,
-  {reply, Reply, StateName, State}.
+  {reply, Reply, StateName, S}.
 
-handle_info(_Info, StateName, State) ->
-  {next_state, StateName, State}.
+handle_info(_Info, StateName, S) ->
+  io:format("handle_info: ~p|~p~n", [_Info, StateName]),
+  {next_state, StateName, S}.
 
-terminate(_Reason, _StateName, _State) ->
+terminate(_Reason, _StateName, _S) ->
   ok.
 
-code_change(_OldVsn, StateName, State, _Extra) ->
-  {ok, StateName, State}.
+code_change(_OldVsn, StateName, S, _Extra) ->
+  {ok, StateName, S}.
 
 %%% TESTS ======================================================================
 -ifdef(TEST).

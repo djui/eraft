@@ -1,11 +1,12 @@
-%% @doc Leveldb logging implementation.
+%% @doc Leveldb logging backend.
 -module(raft_log_leveldb).
 
 %% API
--export([ ]).
+-export([ init/1 ]).
 
 %%% API ========================================================================
-
+init(_Config) ->
+  undefined.
 
 %%% TESTS ======================================================================
 -ifdef(TEST).

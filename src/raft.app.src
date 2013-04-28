@@ -1,8 +1,20 @@
-%% -*- erlang-mode -*-
+%% -*- erlang -*-
 {application, raft, [ {description,  "Raft Consensus Algorithm Implementation"}
                     , {vsn,          git}  
-                    , {applications, [kernel, stdlib]}
-                    , {env,          []}
                     , {mod,          {raft_app, []}}
                     , {registered,   []}
+                    , {applications, [kernel, stdlib]}
+                    , {env,          [ {nodes, []}
+                                     , {timeout,      150}
+                                     , {net_handler,  net_erl_dist}
+                                     , {net_tcp,      [ {port, 4726}
+                                                      ]}
+                                     , {net_erl_dist, [ ]}
+                                     , {log_handler,  log_disk_log}
+                                     , {log_disk_log, [ {dir, "log"}
+                                                      ]}
+                                     , {msg_handler,  msg_erl_term}
+                                     , {msg_erl_term, [ {compressed, true}
+                                                      ]}
+                                     ]}
                     ]}.

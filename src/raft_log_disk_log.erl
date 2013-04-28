@@ -1,11 +1,12 @@
-%% @doc Disk_log logging implementation.
+%% @doc Disk_log logging backend.
 -module(raft_log_disk_log).
 
 %% API
--export([ ]).
+-export([ init/1 ]).
 
 %%% API ========================================================================
-
+init(_Config) ->
+  undefined.
 
 %%% TESTS ======================================================================
 -ifdef(TEST).

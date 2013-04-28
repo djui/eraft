@@ -1,11 +1,12 @@
-%% @doc Erlang terms messaging implementation.
+%% @doc Erlang terms messaging backend.
 -module(raft_msg_erl_term).
 
 %% API
--export([ ]).
+-export([ init/1 ]).
 
 %%% API ========================================================================
-
+init(_Config) ->
+  undefined.
 
 %%% TESTS ======================================================================
 -ifdef(TEST).

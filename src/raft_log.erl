@@ -2,11 +2,12 @@
 -module(raft_log).
 
 %%% Callbacks ==================================================================
--callback foo(_) -> ok | error.
+-callback(init(term()) -> term()).
 
 %%% Exports ====================================================================
--export([ start_link/1 ]).
+-export([ init/1 ]).
 
-%%% API ========================================================================
-start_link(_Args) ->
-  ignore.
+%%% Code =======================================================================
+init(Config) ->
+  HandlerMod = proplists:get_value(log_handler, Config),
+  {HandlerMod, HandlerMod:init(Config)}.
