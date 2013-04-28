@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+SCRIPT=$(basename $0)
+SCRIPT_DIR=$(dirname $(realpath $0))
+ROOT_DIR=$(dirname $SCRIPT_DIR)
+
+
+cd $ROOT_DIR
+exec erl -args_file vm.args

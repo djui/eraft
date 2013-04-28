@@ -1,5 +1,5 @@
-%% @doc Logging behaviour.
--module(raft_log).
+%% @doc Networking behaviour.
+-module(raft_net).
 
 %%% Callbacks ==================================================================
 -callback foo(_) -> ok | error.

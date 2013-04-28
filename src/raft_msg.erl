@@ -1,5 +1,5 @@
-%% @doc Logging behaviour.
--module(raft_log).
+%% @doc Messaging behaviour.
+-module(raft_msg).
 
 %%% Callbacks ==================================================================
 -callback foo(_) -> ok | error.

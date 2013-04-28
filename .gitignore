@@ -2,5 +2,5 @@
 /.eunit/
 /deps/
 /ebin/
-/erl_crash.dump
+erl_crash.dump
 /log/

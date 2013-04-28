@@ -4,20 +4,23 @@ PLT=.dialyzer_plt
 all: deps compile
 
 repl:
-	erl -pz ebin deps/*/ebin
+	@erl -pz ebin deps/*/ebin
 
 deps:
-	$(REBAR) get-deps
-	$(REBAR) update-deps
+	@$(REBAR) get-deps
+	@$(REBAR) update-deps
 
 lock-deps:
 	@touch deps.lock
 
 compile:
-	$(REBAR) compile
+	@$(REBAR) compile
+
+quick:
+	@$(REBAR) compile skip_deps=true
 
 clean:
-	$(REBAR) clean skip_deps=true
+	@$(REBAR) clean skip_deps=true
 
 distclean: clean
 	@rm -rf deps $(PLT)
@@ -27,19 +30,22 @@ distclean: clean
 test: eunit ct
 
 eunit:
-	$(REBAR) eunit skip_deps=true
+	@$(REBAR) eunit skip_deps=true
 
 ct:
-	$(REBAR) ct skip_deps=true
+	@$(REBAR) ct skip_deps=true
 
 xref:
-	$(REBAR) xref skip_deps=true
+	@$(REBAR) xref skip_deps=true
 
 dialyzer: $(PLT)
-	dialyzer --plt $(PLT) -Wrace_conditions -Wunderspecs --src src
+	@dialyzer --plt $(PLT) -Wrace_conditions -Wunderspecs --src src
+	# For < R15B02:
+	# @dialyzer --plt $(PLT) -Wrace_conditions -Wunderspecs -Wno_behaviours --src src
+
 
 $(PLT):
-	dialyzer --build_plt --output_plt $(PLT) \
+	@dialyzer --build_plt --output_plt $(PLT) \
 		--apps erts kernel stdlib compiler \
 		-r deps
 

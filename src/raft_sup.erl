@@ -14,4 +14,12 @@ start_link() ->
 
 %%% Callbacks ==================================================================
 init([]) ->
-  ehf_supervisor:supervision_for_all([ ehf_supervisor:work(raft_fsm) ]).
+  MsgConf = [],
+  NetConf = [],
+  LogConf = [],
+  FsmConf = [],
+  ehf_supervisor:supervision_for_all([ ehf_supervisor:work(raft_msg, [MsgConf])
+                                     , ehf_supervisor:work(raft_net, [NetConf])
+                                     , ehf_supervisor:work(raft_log, [LogConf])
+                                     , ehf_supervisor:work(raft_fsm, [FsmConf])
+                                     ]).

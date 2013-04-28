@@ -1,3 +1,4 @@
+%% @doc Main application interface.
 -module(raft).
 
 -export([ start/0
@@ -6,7 +7,7 @@
 
 %%% API ========================================================================
 start() ->
-  application:start(raft).
+  ehf_application:ensure_started(raft).
 
 stop() ->
   application:stop(raft).

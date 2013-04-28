@@ -4,12 +4,14 @@
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/0]).
+-export([ start_link/1
+        ]).
 
 %% Callbacks
 -export([ init/1
-        , state_name/2
-        , state_name/3
+        , follower/2
+        , candidate/2
+        , leader/2
         , handle_event/3
         , handle_sync_event/4
         , handle_info/3
@@ -18,25 +20,55 @@
         ]).
 
 %%% Macros =====================================================================
--define(SERVER, ?MODULE).
+-define(FSM, ?MODULE).
 
 %%% Records ====================================================================
--record(state, {}).
+-type(replica()      :: string()).
+-type(current_term() :: pos_integer()).
+
+%%% Records ====================================================================
+-record(state, { start_args   = [] :: [_]
+               , current_term = 1  :: current_term()
+               , voted_for         :: replica()
+               }).
 
 %%% API ========================================================================
-start_link() ->
-  gen_fsm:start_link({local, ?SERVER}, ?MODULE, [], []).
+start_link(Args) ->
+  gen_fsm:start_link({local, ?FSM}, ?MODULE, Args, []).
+
+%%% States =====================================================================
+%%% Follower -------------------------------------------------------------------
+follower(timeout, State) ->
+  deferred_init(State#state.start_args),
+  {next_state, follower, State};
+
+follower({election_timeout, _Election}, State) ->
+  {next_state, candidate, State}.
+
+%%% Candidate ------------------------------------------------------------------
+candidate({election_timeout, _Election}, State) ->
+  {next_state, candidate, State};
+
+candidate({higher_term, _Term}, State) ->
+  {next_state, follower, State};
+
+candidate({append_entries, _Entries}, State) ->
+  {next_state, follower, State};
+
+candidate({majority, _Votes}, State) ->
+  {next_state, leader, State}.
+
+%%% Leader  --------------------------------------------------------------------
+leader({higher_term, _Term}, State) ->
+  {next_state, follower, State}.
+
+%%% Internals ==================================================================
+deferred_init(Args) ->
+  Args.
 
 %%% Callbacks ==================================================================
-init([]) ->
-  {ok, state_name, #state{}}.
-
-state_name(_Event, State) ->
-  {next_state, state_name, State}.
-
-state_name(_Event, _From, State) ->
-  Reply = ok,
-  {reply, Reply, state_name, State}.
+init(Args) ->
+  {ok, follower, #state{start_args=Args}, 0}.
 
 handle_event(_Event, StateName, State) ->
   {next_state, StateName, State}.

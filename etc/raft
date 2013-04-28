@@ -1,6 +1,0 @@
-#!/bin/sh
-
-cd $(dirname $0)/..
-echo $PWD
-
-exec erl -args_file etc/vm.args
