@@ -1,3 +1,7 @@
+# Disclaimer
+
+Please use [ZRaft Lib](https://github.com/dreyk/zraft_lib); the implementation below is incomplete and discontinued.
+
 # Raft
 
 Raft reference implementation for Erlang.
